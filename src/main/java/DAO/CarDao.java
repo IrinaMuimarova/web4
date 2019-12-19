@@ -1,10 +1,9 @@
 package DAO;
 
 import model.Car;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import servlet.NewDayServlet;
 
 import java.util.List;
@@ -40,10 +39,11 @@ public class CarDao {
     }
 
     public Long getCarId(String brand, String model, String licensePlate) {
-        Criteria criteria = session.createCriteria(Car.class);
-        List<Car> list = criteria.add(Restrictions.eq("brand", brand))
-                .add(Restrictions.eq("model", model))
-                .add(Restrictions.eq("licensePlate", licensePlate)).list();
+        Query query = session.createQuery("from Car where brand = :brand and model = :model and licensePlate = :licensePlate");
+        query.setParameter("brand", brand);
+        query.setParameter("model", model);
+        query.setParameter("licensePlate", licensePlate);
+        List<Car> list = (List<Car>) query.list();
         if (list.size() > 0) {
             return list.get(0).getId();
         } else {
@@ -52,9 +52,10 @@ public class CarDao {
     }
 
     public int getModelCarCount(String brand, String model) {
-        Criteria criteria = session.createCriteria(Car.class);
-        List<Car> list = criteria.add(Restrictions.eq("brand", brand))
-                .add(Restrictions.eq("model", model)).list();
+        Query query = session.createQuery("from Car where brand = :brand and model = :model");
+        query.setParameter("brand", brand);
+        query.setParameter("model", model);
+        List<Car> list = (List<Car>) query.list();
         return list.size();
     }
 }
